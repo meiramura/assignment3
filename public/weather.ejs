@@ -4,27 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard</title>
+    <title>Weather App</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Custom CSS -->
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        #map {
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        #weatherForm {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
-<body class="container mt-5">
-    <h2 class="mb-4">Weather Dashboard</h2>
-    <form action="/weather" method="post" class="mb-4">
-        <div class="form-group">
-            <label for="city">City:</label>
-            <input type="text" class="form-control" id="city" name="city" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Get Weather</button>
-    </form>
+<body>
+    <div class="container">
+        <h2 class="mb-4">Weather App</h2>
+        <form id="weatherForm">
+            <div class="form-group">
+                <label for="cityInput">Enter city name:</label>
+                <input type="text" class="form-control" id="cityInput" name="city" placeholder="Enter city name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Get Weather</button>
+        </form>
 
-    <!-- Display weather data here -->
+        <div id="weatherInfo"></div>
+        <div id="map"></div>
+    </div>
 
     <!-- Bootstrap JS and Popper.js (Optional) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <footer class="mt-4">
+        <p>Meirambek Koishybaev - SE-2203</p>
+    </footer>
 </body>
 
 </html>
