@@ -210,9 +210,7 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ username });
 
         if (user && user.password === password) {
-            if (username === 'meiramura' && password === 'admin') {
-                req.session.isAdmin = true;
-                req.session.userId = null; 
+            if (user.isAdmin === true) {
                 return res.redirect('/admin');
             }
 
