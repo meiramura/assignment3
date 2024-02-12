@@ -19,11 +19,7 @@ app.use(session({
     cookie: { secure: false } 
 }));
 
-mongoose.connect('mongodb+srv://meirambek:Pa$$529@cluster1.eexs8ak.mongodb.net/?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-
+mongoose.connect('mongodb+srv://meirambek:Pa$$529@cluster1.eexs8ak.mongodb.net/')
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
