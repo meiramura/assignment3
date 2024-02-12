@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const axios = require('axios');
@@ -10,6 +11,13 @@ const GOOGLE_MAPS_API_KEY = 'AIzaSyCxPG9Ry794NfhUyP0aFBpx0DAIormT91w';
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } 
+}));
 
 mongoose.connect('mongodb+srv://meirambek:Pa$$529@cluster1.eexs8ak.mongodb.net/?retryWrites=true&w=majority', {
     useNewUrlParser: true,
@@ -34,6 +42,42 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+const historySchema = new mongoose.Schema({
+    user_id: String,
+    request_path: String,
+    request_method: String,
+    request_data: Object,
+    response_status: Number,
+    response_data: Object,
+    timestamp: { type: Date, default: Date.now }
+});
+
+const HistoryModel = mongoose.model('History', historySchema);
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+const captureHistory = async (req, res, next) => {
+    try {
+        const userId = req.session.userId;
+
+        await HistoryModel.create({
+            user_id: userId,
+            request_path: req.path,
+            request_method: req.method,
+            request_data: req.body, 
+            response_status: res.statusCode,
+            response_data: res.locals.responseData,
+        });
+        next();
+    } catch (error) {
+        console.error('Error capturing history:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -52,11 +96,7 @@ app.post('/register', async (req, res) => {
             return res.render('register', { errorMessage: 'Username already exists' });
         }
 
-        const maxUserIdUser = await User.findOne().sort({ user_id: -1 });
-        const nextUserId = maxUserIdUser ? maxUserIdUser.user_id + 1 : 1;
-
         const newUser = await User.create({
-            user_id: nextUserId,
             username,
             password,
             isAdmin: isAdmin === 'on', 
@@ -174,6 +214,14 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ username });
 
         if (user && user.password === password) {
+            if (username === 'meiramura' && password === 'admin') {
+                req.session.isAdmin = true;
+                req.session.userId = null; 
+                return res.redirect('/admin');
+            }
+
+            req.session.userId = user._id;
+            req.session.isAdmin = false; 
             res.redirect('/weather');
         } else {
             res.render('login', { errorMessage: 'Invalid credentials' });
@@ -258,6 +306,8 @@ async function getTimeZone(lat, lon) {
         return null;
     }
 }
+
+app.use(captureHistory);
 
 app.listen(port, "0.0.0.0", () => {
     console.log(`Server is running on http://localhost:${port}`);
