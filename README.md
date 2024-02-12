@@ -28,4 +28,8 @@ npm install
 - Mongoose
 - Body-parser
 
-
+## Other
+- If you want to go to admin panel just log in as an admin by following credentials:
+- username: meirambek
+- password: admin
+- then after if you want to create another admin user - in admin panel you can add user and tick the checkbox for admin 
